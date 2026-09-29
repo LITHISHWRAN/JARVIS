@@ -1,0 +1,10 @@
+openai
+python-dotenv
+pydantic
+psutil
+pycaw
+comtypes
+WMI
+pywin32
+pillow
+tavily-python
