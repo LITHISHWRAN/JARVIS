@@ -11,15 +11,20 @@ from app.security.policy import SecurityPolicy
 from app.tools.system import GetTimeTool
 from app.tools.applications import (ApplicationManager, LaunchApplicationTool, CloseApplicationTool, IsApplicationRunningTool)
 from app.tools.web import ( WebSearchManager, WebSearchTool)
-
+from app.tools.video import BraveVideoPlayer
 from app.tools.music import (
     LocalMusicManager,
+    OnlineMusicManager,
+    OnlineAudioPlayer,
+    MusicPlaybackController,
+
     PlayMusicTool,
     PauseMusicTool,
     ResumeMusicTool,
     NextMusicTool,
     PreviousMusicTool,
     StopMusicTool,
+    GetMusicStatusTool,
     ListLocalSongsTool,
 )
 
@@ -81,7 +86,18 @@ class Assistant:
         self.clipboard_manager = ClipboardManager()
         self.screenshot_manager = ScreenshotManager()
         self.web_search_manager = WebSearchManager()
+        
         self.music_manager = LocalMusicManager()
+        self.online_music_manager = OnlineMusicManager()
+        self.online_audio_player = OnlineAudioPlayer()
+        self.brave_video_player = BraveVideoPlayer()
+        self.music_controller = MusicPlaybackController(
+            local_manager=self.music_manager,
+            online_manager=self.online_music_manager,
+            online_audio_player=self.online_audio_player,
+            brave_video_player=self.brave_video_player,
+            wifi_manager=self.wifi_manager,
+        )
         
 
 
@@ -119,14 +135,16 @@ class Assistant:
             
             WebSearchTool( self.web_search_manager ),
             
-            PlayMusicTool(self.music_manager),
-            PauseMusicTool(self.music_manager),
-            ResumeMusicTool(self.music_manager),
+            PlayMusicTool(self.music_controller),
+            PauseMusicTool(self.music_controller),
+            ResumeMusicTool(self.music_controller),
+            StopMusicTool(self.music_controller),
+
             NextMusicTool(self.music_manager),
             PreviousMusicTool(self.music_manager),
-            StopMusicTool(self.music_manager),
+            GetMusicStatusTool(self.music_controller),
+            
             ListLocalSongsTool(self.music_manager),
-
 
         ])
         self.security = SecurityPolicy()
